@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Size visual variable</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.21//esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.21//"></script>
+
+    <script>
+      require([
+        "esri/config",
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend",
+        "esri/widgets/Expand"
+      ],(
+        esriConfig,
+        Map,
+        MapView,
+        FeatureLayer,
+        Legend,
+        Expand
+      )=> {
+        esriConfig.apiKey = "AAPK6e5c29a4aa6b47938a68200529d9383afaxSyh3m6ZL7bo0VGTzFfJIjKnj8c1yEGDgX3yUN4UMOHMCXWv69SkWWpgCw5Jai";
+        const referenceScale = 9244650*2;
+
+
+        const renderer = {
+          type: "simple",
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: [50, 50, 50, 0.4],
+            outline: {
+              color: [255, 255, 255, 0.3],
+              width: 0.2
+            },
+            size: "8px"
+          },
+
+          visualVariables: [
+            {
+              type: "size",
+              field: "NDP_Votes",
+              minDataValue: 0,
+              maxDataValue: 30000,
+              minSize: 4,
+              maxSize: 22
+            },
+            {type: "color",
+            field: "NDP_Contribution",
+            stops: [
+              {value: 0, color: "#ffffff"},
+              {value: 500, color: "#f5d6bf"},
+              {value: 1500, color: "#dba67f"},
+              {value: 4000, color: "#d68245"},
+              {value: 10000, color: "#9c4608"}
+            ]}
+            
+          ]
+          
+
+        };
+
+
+        // Set the renderer on the feature layer
+        const layer = new FeatureLayer({
+          portalItem: {
+            id: "43a433354533459093ba47162e511235"
+          },
+          title: "Electoral Districts",
+          renderer: renderer
+        });
+
+        const map = new Map({
+          basemap: {
+            portalItem: {
+              id: "ba223f982a3c4a0ea8c9953346e2a201"
+            }
+          },
+          layers: [layer]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          scale: referenceScale,
+          center: [ -85, 45 ],
+          constraints: {
+            snapToZoom:false
+          }
+        });
+
+        view.ui.add(new Expand({
+          content: new Legend({
+            view: view
+          }),
+          view: view,
+          expanded: false
+        }), "top-right");
+      });
+    </script>
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>
